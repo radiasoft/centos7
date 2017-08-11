@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+#
+#
+
+config.vm.define "machine4" do |machine4|
+    machine4.vm.network "private_network", ip: "192.168.10.40"
+    machine4.vm.provider :virtualbox do |vb|
+        vb.customize ["createhd",  "--filename", "docker", "--size", "2048"]
+        vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "m4_disk0.vdi"]
+    end
+end
+
+start writing for a fixed install idempotent
+
+apa3.bivio.biz.sh
+
+
+
+install
+
+$1 - hostname -f
+install_channel is set for the class of machine - not extra levels
+
+pkos_root=/var/db/rscm - needs to be a root server so need to pull files
+    recursively
+
+nothing to make, just interpreted
+
+sharing through var files
+
+rscm_var
+
+setting hostname
+
+docker install from repo
+vagrant box repartion
+
+shared memory for postgresql server
+reboot
+
+create another disk in Vagrant (installer can do his)
+
+look for disk or configured or know if vagrant
+
+pass info on the command line
+
+/vagrant directory
+
+disk partitioning is known in vars
