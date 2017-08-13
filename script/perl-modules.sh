@@ -11,10 +11,11 @@ perl_modules_main() {
     fi
     local x=(
         gcc-c++
-        postgresql-devel
+        gmp-devel
         mod_perl
-        xapian-core-devel
+        postgresql-devel
         rpm-build
+        xapian-core-devel
 
         perl-Algorithm-Diff
         perl-Archive-Zip
