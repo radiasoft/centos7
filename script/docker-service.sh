@@ -17,7 +17,7 @@ docker_service_main() {
     yum-config-manager \
         --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     yum makecache fast
-    yum install -y docker-ce-17.06.0.ce-1.el7.centos
+    yum install -y -q docker-ce-17.06.0.ce-1.el7.centos
     local vg=docker
     while [[ $(lvs --noheadings --nameprefixes "$vg") =~ LVM2_LV_NAME=.([^\']+) ]]; do
         lvremove -f "$vg/${BASH_REMATCH[1]}"
