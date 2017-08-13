@@ -12,4 +12,5 @@ base_os_main() {
     local f=etc/sysctl.d/60-rs-base.conf
     install_download "$f" > "/$f"
     chmod 400 "/$f"
+    sysctl -p
 }
