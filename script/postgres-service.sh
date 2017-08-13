@@ -22,7 +22,7 @@ postgres_service_main() {
     fi
     yum install -y -q postgresql-server
     cd "$d"
-    local pw=../rs_pw
+    local pw=$PWD/../rs_pw
     echo "$RS_CENTOS7_POSTGRES_PASSWORD" > "$pw"
     chown postgres "$pw"
     PGSETUP_INITDB_OPTIONS="--pwfile=$pw" postgresql-setup initdb
