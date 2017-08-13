@@ -21,7 +21,7 @@ postgres_service_main() {
     local chmod=( $c pg_hba.conf server.key server.crt )
     cat > pg_hba.conf <<EOF
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
-local   all         all         127.0.0.1/32          md5
+local   all         all                               md5
 hostssl all         all         0.0.0.0/0             md5
 hostssl all         all         ::/0                  md5
 EOF
