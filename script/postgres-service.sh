@@ -31,32 +31,34 @@ EOF
     openssl req -x509 -nodes -days 9999 -set_serial "$(date +%s)" \
         -newkey rsa:2048 -keyout server.key -out server.crt \
         -subj /C=US/ST=Colorado/L=Boulder/CN="$(hostname -f)"
-    # http://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server
-    # http://wiki.postgresql.org/wiki/Performance_Optimization
     if [[ ! $(free -b) =~ Mem:[[:space:]]+([[:digit:]]+) ]]; then
         install_err 'free -b: format is not correct'
     fi
-    local sb=$(( ${BASH_REMATCH[1]} / (1024 * 1024) ))
-    cat > "$c" <<"EOF"
-max_connections = 128
-ssl = on
-ssl_ciphers = 'DHE-RSA-AES256-SHA:AES256-SHA:DHE-RSA-AES128-SHA:RC4-SHA:HIGH:!ADH'
-ssl_cert_file = 'server.crt'
-ssl_key_file = 'server.key'
-log_line_prefix = '%t %d %p '
-listen_addresses = '*'
+    # http://wiki.postgresql.org/wiki/Performance_Optimization
+    # https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server
+    # "If you have a system with 1GB or more of RAM, a reasonable
+    # starting value for shared_buffers is 1/4 of the memory in your system."
+    local sb=$(( ${BASH_REMATCH[1]} / (3 * 1024 * 1024) ))
+    cat > "$c" <<EOF
 checkpoint_completion_target = 0.9
 checkpoint_segments = 64
 effective_cache_size =  $(( $sb * 2 ))MB
+listen_addresses = '*'
 log_checkpoints = on
+log_line_prefix = '%t %d %p '
 maintenance_work_mem = 64MB
+max_connections = 128
 shared_buffers = ${sb}MB
+ssl = on
+ssl_cert_file = 'server.crt'
+ssl_ciphers = 'DHE-RSA-AES256-SHA:AES256-SHA:DHE-RSA-AES128-SHA:RC4-SHA:HIGH:!ADH'
+ssl_key_file = 'server.key'
 wal_buffers = 64MB
 work_mem = 4MB
 EOF
-
     chown postgres:postgres "$c"
     chmod 600 "$c"
+    systemctl daemon-reload
     systemctl enable postgresql
     systemctl start postgresql
 }
