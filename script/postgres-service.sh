@@ -21,6 +21,7 @@ postgres_service_main() {
     local chmod=( $c pg_hba.conf server.key server.crt )
     cat > pg_hba.conf <<EOF
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
+local   all         postgres                          peer
 local   all         all                               md5
 hostssl all         all         0.0.0.0/0             md5
 hostssl all         all         ::/0                  md5
@@ -57,6 +58,6 @@ EOF
     chown postgres:postgres "${chmod[@]}"
     chmod 400 "${chmod[@]}"
     systemctl daemon-reload
-    systemctl enable postgresql
     systemctl start postgresql
+    systemctl enable postgresql
 }
