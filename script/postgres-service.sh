@@ -13,16 +13,26 @@ postgres_service_main() {
     if [[ -e $d ]]; then
         install_err "$d: already exists, uninstall postgres first"
     fi
+    local local_method=md5
+    if [[ $install_channel == dev ]]; then
+        local_method=trust
+        : ${RS_CENTOS7_POSTGRES_PASSWORD:=postgres}
+    elif [[ -z $RS_CENTOS7_POSTGRES_PASSWORD ]]; then
+        install_err '$RS_CENTOS7_POSTGRES_PASSWORD: must be set'
+    fi
     yum install -y -q postgresql-server
     cd "$d"
-    postgresql-setup initdb
+    local pw=rs_pw
+    echo "$RS_CENTOS7_POSTGRES_PASSWORD" > "$pw"
+    chown postgres "$pw"
+    PGSETUP_INITDB_OPTIONS="--pwfile=$pw" postgresql-setup initdb
+    rm -f "$pw"
     local c=radiasoft.conf
     echo "include '$c'" >> postgresql.conf
     local chmod=( $c pg_hba.conf server.key server.crt )
     cat > pg_hba.conf <<EOF
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
-local   all         postgres                          peer
-local   all         all                               md5
+local   all         all                               $local_method
 hostssl all         all         0.0.0.0/0             md5
 hostssl all         all         ::/0                  md5
 EOF
@@ -60,8 +70,4 @@ EOF
     systemctl daemon-reload
     systemctl start postgresql
     systemctl enable postgresql
-    # always set a password, even if random; can't trust default
-    : ${RS_CENTOS7_POSTGRES_PASSWORD:=$RANDOM$RANDOM$RANDOM}
-    echo "alter user postgres with password '$RS_CENTOS7_POSTGRES_PASSWORD'" \
-        | su - postgres -c psql
 }
