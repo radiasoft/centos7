@@ -6,13 +6,13 @@
 #     docker-service
 #
 # Assumes volume group "docker" exists. Will remove all logical volumes first.
-#
+
 docker_service_main() {
     if (( $EUID != 0 )); then
         install_err 'must be run as root'
     fi
     if [[ -e /var/lib/docker ]]; then
-        install_err '/var/lib/docker: already exists, unistall docker'
+        install_err '/var/lib/docker: already exists, uninstall docker'
     fi
     yum-config-manager \
         --add-repo https://download.docker.com/linux/centos/docker-ce.repo
@@ -58,5 +58,3 @@ EOF
        usermod -aG docker vagrant
     fi
 }
-
-docker_service_main "${install_extra_args[@]}"

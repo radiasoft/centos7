@@ -69,5 +69,3 @@ end
 EOF
     vagrant up
 }
-
-vagrant_up_main "${install_extra_args[@]}"
