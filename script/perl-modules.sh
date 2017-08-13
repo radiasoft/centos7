@@ -145,7 +145,7 @@ perl_modules_main() {
     yum install -y "${x[@]}"
     install_download src/ctime.patch | (
         cd /
-        patch -p0
+        patch -fp0
     )
     install_tmp_dir
     umask 022
