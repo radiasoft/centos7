@@ -13,7 +13,7 @@ postgres_service_main() {
     if [[ -e $d ]]; then
         install_err "$d: already exists, uninstall postgres first"
     fi
-    yum install -y postgresql-server
+    yum install -y -q postgresql-server
     cd "$d"
     postgresql-setup initdb
     local c=radiasoft.conf
@@ -62,6 +62,6 @@ EOF
     systemctl enable postgresql
     # always set a password, even if random; can't trust default
     : ${RS_CENTOS7_POSTGRES_PASSWORD:=$RANDOM$RANDOM$RANDOM}
-    echo "alter user 'postgres' with password '$RS_CENTOS7_POSTGRES_PASSWORD'; commit;" \
+    echo "alter user postgres with password '$RS_CENTOS7_POSTGRES_PASSWORD'" \
         | su - postgres -c psql
 }
