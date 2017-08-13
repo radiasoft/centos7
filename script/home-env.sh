@@ -11,6 +11,12 @@ home_env_main() {
     (
         set -e -o pipefail
         install_main home
+        cat > /root/.post_bivio_bashrc <<EOF
+export SYSTEMD_COLORS=0
+# --quit-if-one-screen -quit-at-eof --quit-on-intr --no-init
+export SYSTEMD_LESS=EFKX
+EOF
+        chmod 600 /root/.post_bivio_bashrc
     )
     if (( $? != 0 )); then
         install_err 'root environment install failed'
