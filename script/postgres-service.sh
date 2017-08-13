@@ -60,4 +60,8 @@ EOF
     systemctl daemon-reload
     systemctl start postgresql
     systemctl enable postgresql
+    # always set a password, even if random; can't trust default
+    : ${RS_CENTOS7_POSTGRES_PASSWORD:=$RANDOM$RANDOM$RANDOM}
+    echo "alter user 'postgres' with password '$RS_CENTOS7_POSTGRES_PASSWORD'; commit;" \
+        | su - postgres -c psql
 }
