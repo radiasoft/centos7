@@ -10,9 +10,6 @@ perl_modules_main() {
         install_err 'must be run as root'
     fi
     local x=(
-        git
-        postgresql-server
-
         gcc-c++
         postgresql-devel
         mod_perl
@@ -143,21 +140,27 @@ perl_modules_main() {
         perl-libwww-perl
     )
     yum install -y "${x[@]}"
-    install_download src/ctime.patch | (
-        cd /
-        patch -fp0
-    )
-    install_tmp_dir
     umask 022
-    (
-        install_download src/gmp-6.0.0a.tar.bz2 | tar xjf -
-        cd gmp-6.0.0/demos/perl
-        install_download src/gmp-6.0.0.patch | patch -p0
-        perl Makefile.PL
-        make install
-    )
-    (
-        centos7_install_file root/.cpan/CPAN/MyConfig.pm
-        cpan install OLLY/Search-Xapian-1.2.22.0.tar.gz
-    )
+    if fgrep 'local($[)' /usr/share/perl5/ctime.pl >& /dev/null; then
+        install_download src/ctime.patch | (
+            cd /
+            patch -fp0
+        )
+    fi
+    install_tmp_dir
+    if ! perl -MGMP -e 1 >& /dev/null; then
+        (
+            install_download src/gmp-6.0.0a.tar.bz2 | tar xjf -
+            cd gmp-6.0.0/demos/perl
+            install_download src/gmp-6.0.0.patch | patch -p0
+            perl Makefile.PL
+            make install
+        )
+    fi
+    if ! perl -MSearch::Xapian -e 1 >& /dev/null; then
+        (
+            centos7_install_file root/.cpan/CPAN/MyConfig.pm
+            cpan install OLLY/Search-Xapian-1.2.22.0.tar.gz
+        )
+    fi
 }
