@@ -147,7 +147,7 @@ perl_modules_main() {
         cd /
         patch -p0
     )
-    install_tmp
+    install_tmp_dir
     umask 022
     (
         install_download src/gmp-6.0.0a.tar.bz2 | tar xjf -
