@@ -34,6 +34,8 @@ Vagrant.configure("2") do |config|
     config.vm.network "private_network", ip: "$ip"
     config.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--audio", "none"]
+        # https://stackoverflow.com/a/36959857/3075806
+        v.customize ["setextradata", :id, "VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", "0"]
         # If you see network restart issues, try this:
         # https://github.com/mitchellh/vagrant/issues/8373
         # v.customize ["modifyvm", :id, "--nictype1", "virtio"]
@@ -64,7 +66,8 @@ Vagrant.configure("2") do |config|
     if Vagrant.has_plugin?("vagrant-vbguest")
         config.vbguest.auto_update = false
     end
-    config.vm.synced_folder ".", "/vagrant", type: "nfs"
+    # Mac OS X needs version 4
+    config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_version: 4, nfs_udp: false
 end
 EOF
     vagrant up
