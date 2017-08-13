@@ -1,0 +1,31 @@
+diff --git GMP/Mpf.pm GMP/Mpf.pm
+index ea7b28b..4ebfcec 100644
+--- GMP/Mpf.pm
++++ GMP/Mpf.pm
+@@ -42,7 +42,6 @@ FIX: overload arg 'not' is invalid
+     '>>'  => \&overload_rshift,  '>>=' => \&overload_rshifteq,
+
+     'bool' => \&overload_bool,
+-    'not'  => \&overload_not,
+     '!'    => \&overload_not,
+     '<=>'  => \&overload_spaceship,
+     '++'   => \&overload_inc,
+@@ -71,18 +70,7 @@ FIX: $# is no longer supported
+
+ sub overload_string {
+   my $fmt;
+-  BEGIN { $^W = 0; }
+-  if (defined ($#)) {
+-    $fmt = $#;
+-    BEGIN { $^W = 1; }
+-    # protect against calling sprintf_internal with a bad format
+-    if ($fmt !~ /^((%%|[^%])*%[-+ .\d]*)([eEfgG](%%|[^%])*)$/) {
+-      die "GMP::Mpf: invalid \$# format: $#\n";
+-    }
+-    $fmt = $1 . 'F' . $3;
+-  } else {
+-    $fmt = '%.Fg';
+-  }
++  $fmt = '%.Fg';
+   GMP::sprintf_internal ($fmt, $_[0]);
+ }
