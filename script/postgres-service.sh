@@ -20,7 +20,7 @@ postgres_service_main() {
     echo "include '$c'" >> postgresql.conf
     cat > pg_hba.conf <<EOF
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
-local   all         all         127.0.0.1/32          ident
+local   all         all         127.0.0.1/32          md5
 hostssl all         all         0.0.0.0/0             md5
 hostssl all         all         ::/0                  md5
 EOF
