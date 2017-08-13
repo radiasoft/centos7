@@ -37,7 +37,7 @@ EOF
     # https://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server
     # "If you have a system with 1GB or more of RAM, a reasonable
     # starting value for shared_buffers is 1/4 of the memory in your system."
-    local sb=$(( ${BASH_REMATCH[1]} / (3 * 1024 * 1024) ))
+    local sb=$(( ${BASH_REMATCH[1]} / (4 * 1024 * 1024) ))
     cat > "$c" <<EOF
 checkpoint_completion_target = 0.9
 checkpoint_segments = 64

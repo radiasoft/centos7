@@ -9,8 +9,8 @@ base_os_main() {
     if (( $EUID != 0 )); then
         install_err 'must be run as root'
     fi
-    local f=etc/sysctl.d/60-rs-base.conf
-    install_download "$f" > "/$f"
-    chmod 400 "/$f"
+    centos7_install_file etc/sysctl.d/60-rs-base.conf 400
     sysctl -p --system
+    yum install -y epel-release
+    yum install emacs-nox patch unzip wget git
 }
