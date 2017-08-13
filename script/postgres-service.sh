@@ -18,16 +18,14 @@ postgres_service_main() {
     postgresql-setup initdb
     local c=radiasoft.conf
     echo "include '$c'" >> postgresql.conf
+    local chmod=( $c pg_hba.conf server.key server.crt )
     cat > pg_hba.conf <<EOF
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
 local   all         all         127.0.0.1/32          md5
 hostssl all         all         0.0.0.0/0             md5
 hostssl all         all         ::/0                  md5
 EOF
-
-    chown postgres:postgres pg_hba.conf
-    chmod 600 pg_hba.conf
-    # server.* are default names
+    # server.* are default names so use them
     openssl req -x509 -nodes -days 9999 -set_serial "$(date +%s)" \
         -newkey rsa:2048 -keyout server.key -out server.crt \
         -subj /C=US/ST=Colorado/L=Boulder/CN="$(hostname -f)"
@@ -56,8 +54,8 @@ ssl_key_file = 'server.key'
 wal_buffers = 64MB
 work_mem = 4MB
 EOF
-    chown postgres:postgres "$c"
-    chmod 600 "$c"
+    chown postgres:postgres "${chmod[@]}"
+    chmod 400 "${chmod[@]}"
     systemctl daemon-reload
     systemctl enable postgresql
     systemctl start postgresql
