@@ -67,7 +67,7 @@ Vagrant.configure("2") do |config|
         config.vbguest.auto_update = false
     end
     # Mac OS X needs version 4
-    config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_version: 4, nfs_udp: false
+    config.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'fsc', 'actimeo=2']
 end
 EOF
     vagrant up
