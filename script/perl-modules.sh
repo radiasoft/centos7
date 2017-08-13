@@ -10,6 +10,7 @@ perl_modules_main() {
         install_err 'must be run as root'
     fi
     local x=(
+        awstats
         gcc-c++
         gmp-devel
         mod_perl
@@ -164,4 +165,8 @@ perl_modules_main() {
             cpan install OLLY/Search-Xapian-1.2.22.0.tar.gz
         )
     fi
+    if [[ ! -L /usr/local/awstats ]]; then
+        ln -s /usr/share/awstats /usr/local
+    fi
+    #TODO(robnagler) /usr/bin/pdftotext
 }
