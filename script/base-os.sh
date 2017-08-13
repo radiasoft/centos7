@@ -11,6 +11,6 @@ base_os_main() {
     fi
     centos7_install_file etc/sysctl.d/60-rs-base.conf 400
     sysctl -p --system
-    yum install -y epel-release
-    yum install -y emacs-nox patch unzip wget git
+    yum install -y -q epel-release
+    yum install -y -q emacs-nox patch unzip wget git
 }

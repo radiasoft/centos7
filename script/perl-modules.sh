@@ -140,7 +140,7 @@ perl_modules_main() {
         perl-YAML-Syck
         perl-libwww-perl
     )
-    yum install -y "${x[@]}"
+    yum install -y -q "${x[@]}"
     umask 022
     if fgrep 'local($[)' /usr/share/perl5/ctime.pl >& /dev/null; then
         install_download src/ctime.patch | (
