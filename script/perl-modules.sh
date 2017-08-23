@@ -5,15 +5,29 @@
 # Usage: curl radia.run | bash -s centos7 \
 #     perl-modules
 
+perl_modules_make() {
+    perl Makefile.PL < /dev/null
+    make POD2MAN=/bin/true
+    make POD2MAN=/bin/true pure_install
+}
+
 perl_modules_main() {
     if (( $EUID != 0 )); then
         install_err 'must be run as root'
     fi
     local x=(
         awstats
+        catdoc
         gcc-c++
+        ghostscript
         gmp-devel
+        httpd
+        java-1.7.0-openjdk-devel
+        mdbtools
         mod_perl
+        mod_ssl
+        openssl-devel
+        poppler-utils
         postgresql-devel
         rpm-build
         xapian-core-devel
@@ -143,6 +157,12 @@ perl_modules_main() {
     )
     yum install -y -q "${x[@]}"
     umask 022
+    if [[ ! -L /usr/local/awstats ]]; then
+        ln -s /usr/share/awstats /usr/local
+    fi
+    centos7_install_file root/.cpan/CPAN/MyConfig.pm
+    centos7_install_file usr/java/bcprov-jdk15-145.jar 444
+    centos7_install_file usr/java/itextpdf-5.5.8.jar 444
     if fgrep 'local($[)' /usr/share/perl5/ctime.pl >& /dev/null; then
         install_download src/ctime.patch | (
             cd /
@@ -150,23 +170,16 @@ perl_modules_main() {
         )
     fi
     install_tmp_dir
-    if ! perl -MGMP -e 1 >& /dev/null; then
-        (
-            install_download src/gmp-6.0.0a.tar.bz2 | tar xjf -
-            cd gmp-6.0.0/demos/perl
-            install_download src/gmp-6.0.0.patch | patch -p0
-            perl Makefile.PL
-            make install
-        )
-    fi
-    if ! perl -MSearch::Xapian -e 1 >& /dev/null; then
-        (
-            centos7_install_file root/.cpan/CPAN/MyConfig.pm
-            cpan install OLLY/Search-Xapian-1.2.22.0.tar.gz
-        )
-    fi
-    if [[ ! -L /usr/local/awstats ]]; then
-        ln -s /usr/share/awstats /usr/local
-    fi
-    #TODO(robnagler) /usr/bin/pdftotext
+    cpan install OLLY/Search-Xapian-1.2.22.0.tar.gz
+    (
+        install_download src/gmp-6.0.0a.tar.bz2 | tar xjf -
+        cd gmp-6.0.0/demos/perl
+        install_download src/gmp-6.0.0.patch | patch -p0
+        perl_modules_make
+    )
+    (
+        git clone --recursive --depth 1 https://github.com/biviosoftware/perl-misc
+        cd perl-misc
+        perl_modules_make
+    )
 }
