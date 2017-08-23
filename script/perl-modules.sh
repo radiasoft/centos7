@@ -160,9 +160,6 @@ perl_modules_main() {
     if [[ ! -L /usr/local/awstats ]]; then
         ln -s /usr/share/awstats /usr/local
     fi
-https://www.centos.org/forums/viewtopic.php?t=56799#p239629
-mock chroot on epel build
-cpanspec
     centos7_install_file root/.cpan/CPAN/MyConfig.pm
     centos7_install_file usr/java/bcprov-jdk15-145.jar 444
     centos7_install_file usr/java/itextpdf-5.5.8.jar 444
