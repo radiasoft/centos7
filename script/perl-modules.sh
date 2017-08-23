@@ -28,6 +28,7 @@ perl_modules_main() {
         openssl-devel
         poppler-utils
         postgresql-devel
+        procmail
         rpm-build
         xapian-core-devel
 
