@@ -11,12 +11,14 @@ base_os_main() {
     fi
     centos7_install_file etc/sysctl.d/60-rs-base.conf 400
     sysctl -p --system
-    yum install -y -q epel-release
+    yum --enablerepo=extras install -y -q epel-release
     local x=(
+        bind-utils
         emacs-nox
         git
         patch
         screen
+        strace
         unzip
         wget
     )
