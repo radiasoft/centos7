@@ -6,7 +6,7 @@
 #     perl-modules
 
 perl_modules_make() {
-    perl Makefile.PL < /dev/null
+    perl Makefile.PL PREFIX=/usr/local < /dev/null
     make POD2MAN=/bin/true
     make POD2MAN=/bin/true pure_install
 }
@@ -17,7 +17,6 @@ perl_modules_main() {
     fi
     local x=(
         awstats
-        catdoc
         gcc-c++
         ghostscript
         gmp-devel
@@ -163,12 +162,7 @@ perl_modules_main() {
     centos7_install_file root/.cpan/CPAN/MyConfig.pm
     centos7_install_file usr/java/bcprov-jdk15-145.jar 444
     centos7_install_file usr/java/itextpdf-5.5.8.jar 444
-    if fgrep 'local($[)' /usr/share/perl5/ctime.pl >& /dev/null; then
-        install_download src/ctime.patch | (
-            cd /
-            patch -fp0
-        )
-    fi
+    perl -pi -e 'm{local\(\$\[} && ($_ = q{})' /usr/share/perl5/*.pl
     install_tmp_dir
     cpan install OLLY/Search-Xapian-1.2.22.0.tar.gz
     (
@@ -181,5 +175,12 @@ perl_modules_main() {
         git clone --recursive --depth 1 https://github.com/biviosoftware/perl-misc
         cd perl-misc
         perl_modules_make
+    )
+    (
+        git clone --recursive --depth 1 https://github.com/biviosoftware/external-catdoc
+        cd external-catdoc
+        ./configure --prefix=/usr/local --disable-wordview
+        make
+        make install
     )
 }
