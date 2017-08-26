@@ -186,7 +186,7 @@ perl_modules_main() {
         make install
     )
     (
-        install_download src/perl | tar xjf -
+        install_download src/perl2html-0.9.2.tar.bz2 | tar xjf -
         cd perl2html-0.9.2
         ./configure --prefix=/usr/local
         make install
