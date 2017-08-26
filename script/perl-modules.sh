@@ -163,6 +163,7 @@ perl_modules_main() {
     centos7_install_file root/.cpan/CPAN/MyConfig.pm
     centos7_install_file usr/java/bcprov-jdk15-145.jar 444
     centos7_install_file usr/java/itextpdf-5.5.8.jar 444
+    centos7_install_file usr/java/yui-compressor.jar 444
     perl -pi -e 'm{local\(\$\[} && ($_ = q{})' /usr/share/perl5/*.pl
     install_tmp_dir
     cpan install OLLY/Search-Xapian-1.2.22.0.tar.gz
@@ -191,3 +192,26 @@ perl_modules_main() {
         make install
     )
 }
+
+# Comments
+cat <<'EOF' > /dev/null
+yum install -y httpd-devel perl-generators perl-ExtUtils-Embed
+SPECS# rpmbuild -ba perl.spec
+error: Failed build dependencies:
+	groff is needed by perl-4:5.16.3-291.el7.centos.x86_64
+	tcsh is needed by perl-4:5.16.3-291.el7.centos.x86_64
+	bzip2-devel is needed by perl-4:5.16.3-291.el7.centos.x86_64
+SPECS# yum install -y bzip2-devel tcsh groff
+
+
+[Thu Aug 24 02:40:02.076026 2017] [authz_core:debug] [pid 23938] mod_authz_core.c(835):
+ [client 10.10.10.1:58981] AH01628: authorization result: granted (no directives), referer: http://10.10.10.50:8000/
+
+https://perl.apache.org/docs/2.0/user/porting/porting.html
+
+# requireany explained
+http://www.the-art-of-web.com/system/apache-authorization/
+
+# Need to add back in
+ipcclean
+EOF
