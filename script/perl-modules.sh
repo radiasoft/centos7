@@ -22,6 +22,8 @@ perl_modules_main() {
         gmp-devel
         httpd
         java-1.7.0-openjdk-devel
+        # Needed by perl2html
+        flex
         mdbtools
         mod_perl
         mod_ssl
@@ -188,7 +190,9 @@ perl_modules_main() {
     (
         install_download src/perl2html-0.9.2.tar.bz2 | tar xjf -
         cd perl2html-0.9.2
-        ./configure --prefix=/usr/local
+        # https://lists.gnu.org/archive/html/octave-maintainers/2012-05/msg00208.html
+        perl -pi -e 's{\@LEX\@}{flex --noyywrap}' Makefile.inn
+        ./configure
         make install
     )
 }
