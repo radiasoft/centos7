@@ -14,3 +14,7 @@ useradd -g gname -u uid -s shell -G group1,group2 uname
 useradd -g vagrant vagrant
 usermod -G group1,group2 vagrant # absolute
 usermod -a -G group3 vagrant # appends
+
+# For centos7 installs
+ln -s radiasoft/download/bin/index.sh ~/src/index.html
+python -m SimpleHTTPServer 8000
