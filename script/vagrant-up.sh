@@ -13,6 +13,54 @@
 # VBoxManage list hdds|tail
 # vagrant plugin install vagrant-vbguest
 
+vagrant_up_check() {
+    local vdi=$1
+    if [[ -z $(type -t vagrant) ]]; then
+        install_err 'vagrant not installed. Please visit to install:
+
+http://vagrantup.com'
+    fi
+    if [[ -d .vagrant ]]; then
+        local s=$(vagrant status 2>&1)
+        local re=' not created |machine is required to run'
+        if [[ ! $s =~ $re ]]; then
+            install_err 'vagrant machine exists. Please run: vagrant destroy -f'
+        fi
+    fi
+    if [[ -e $vdi ]]; then
+        vagrant_up_delete_vdi "$vdi"
+    else
+        vagrant plugin install vagrant-persistent-storage
+    fi
+}
+
+vagrant_up_delete_vdi() {
+    # vdi might be leftover from previous vagrant up. VirtualBox doesn't
+    # destroy automatically.
+    local vdi=$1
+    local l u uuid
+    VBoxManage list hdds | while read l; do
+        if [[ ! $l =~ ^[^:]+:[[:space:]]*(.+) ]]; then
+            continue
+        fi
+        case $BASH_REMATCH[1] in
+            Location)
+                if [[ $vdi == $BASH_REMATCH[2] ]]; then
+                    uuid=$u
+                    break
+                fi
+                ;;
+            UUID)
+                u=BASH_REMATCH[2]
+                ;;
+        esac
+    done
+    if [[ -n $uuid ]]; then
+        install_info "Deleting HDD $vdi ($uuid)"
+        VBoxManage closemedium disk "$uuid" --delete
+    fi
+}
+
 vagrant_up_main() {
     local host=${1:-v.bivio.biz}
     local ip=$2
@@ -23,17 +71,16 @@ vagrant_up_main() {
             install_err "$host: host not found and IP address not supplied"
         fi
     fi
-    local vdi=$base-docker.vdi
-    if [[ -e Vagrantfile ]]; then
-        install_err 'Vagrantfile: already exists, remove first'
-    fi
-    if [[ -e $vdi ]]; then
-        install_err "$vdi: exists, remove first by UUID with commands:
+    # Absolute path is necessary for comparison in vagrant_up_delete_vdi
+    local vdi=$PWD/$base-docker.vdi
+    vagrant_up_check "$vdi"
+    vagrant_up_vagrantfile "$host" "$ip" "$vdi"
+    vagrant up
+    install_download src/vagrant-up-provision.sh | vagrant ssh -c 'sudo bash'
+}
 
-VBoxManage list hdds | tail
-VBoxManage closemedium disk UUID --delete"
-    fi
-    vagrant plugin install vagrant-persistent-storage
+vagrant_up_vagrantfile() {
+    local host=$1 ip=$2 vdi=$3
     cat > Vagrantfile <<EOF
 Vagrant.configure("2") do |config|
     config.vm.box = "centos/7"
@@ -74,10 +121,7 @@ Vagrant.configure("2") do |config|
         config.vbguest.auto_update = false
     end
     # Mac OS X needs version 4
-    config.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'fsc', 'actimeo=2']
+    config.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ["rw", "vers=3", "tcp", "nolock", "fsc", "actimeo=2"]
 end
-EOF
-    vagrant up
-    install_download src/vagrant-up-provision.sh | vagrant ssh -c 'sudo bash'
 EOF
 }
