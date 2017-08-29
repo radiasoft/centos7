@@ -78,4 +78,6 @@ Vagrant.configure("2") do |config|
 end
 EOF
     vagrant up
+    install_download src/vagrant-up-provision.sh | vagrant ssh -c 'sudo bash'
+EOF
 }
