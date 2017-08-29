@@ -9,7 +9,7 @@ base_os_main() {
     if (( $EUID != 0 )); then
         install_err 'must be run as root'
     fi
-    centos7_install_file etc/sysctl.d/60-rs-base.conf 400
+    centos7_install_file etc/sysctl.d/60-rsconf-base.conf 400
     sysctl -p --system
     yum --enablerepo=extras install -y -q epel-release
     local x=(

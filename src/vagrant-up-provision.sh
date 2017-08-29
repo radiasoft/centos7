@@ -1,5 +1,5 @@
 #!/bin/bash
-x=rs-chrony-makestep.service
+x=rsconf-chrony-makestep.service
 cat > /etc/systemd/system/"$x" <<'EOF'
 [Unit]
 Description=Force chrony to synchronize (makestep) system clock
