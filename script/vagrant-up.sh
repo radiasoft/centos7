@@ -14,9 +14,16 @@
 # vagrant plugin install vagrant-vbguest
 
 vagrant_up_main() {
-    local name=${1:-v}
-    local ip=${2:-10.10.10.10}
-    local vdi=$name-docker.vdi
+    local host=${1:-v.bivio.biz}
+    local ip=$2
+    local base=${$host%%.*}
+    if [[ -z $ip ]]; then
+        ip=$(dig +short "$host")
+        if [[ -z $ip ]]; then
+            install_err "$host: host not found and IP address not supplied"
+        fi
+    fi
+    local vdi=$base-docker.vdi
     if [[ -e Vagrantfile ]]; then
         install_err 'Vagrantfile: already exists, remove first'
     fi
@@ -30,7 +37,7 @@ VBoxManage closemedium disk UUID --delete"
     cat > Vagrantfile <<EOF
 Vagrant.configure("2") do |config|
     config.vm.box = "centos/7"
-    config.vm.hostname = "$name"
+    config.vm.hostname = "$host"
     config.vm.network "private_network", ip: "$ip"
     config.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--audio", "none"]
