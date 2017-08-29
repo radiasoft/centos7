@@ -16,7 +16,7 @@
 vagrant_up_main() {
     local host=${1:-v.bivio.biz}
     local ip=$2
-    local base=${$host%%.*}
+    local base=${host%%.*}
     if [[ -z $ip ]]; then
         ip=$(dig +short "$host")
         if [[ -z $ip ]]; then
