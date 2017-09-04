@@ -13,6 +13,7 @@ docker_service_main() {
     fi
     if [[ -e /var/lib/docker ]]; then
         install_info '/var/lib/docker: exists, docker already installed'
+        return
     fi
     yum-config-manager \
         --add-repo https://download.docker.com/linux/centos/docker-ce.repo
