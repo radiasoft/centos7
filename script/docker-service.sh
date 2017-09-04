@@ -12,7 +12,7 @@ docker_service_main() {
         install_err 'must be run as root'
     fi
     if [[ -e /var/lib/docker ]]; then
-        install_err '/var/lib/docker: already exists, uninstall docker'
+        install_info '/var/lib/docker: exists, docker already installed'
     fi
     yum-config-manager \
         --add-repo https://download.docker.com/linux/centos/docker-ce.repo
